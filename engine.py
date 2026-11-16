@@ -147,7 +147,7 @@ def ev(b):
 TT={}
 KI=[[0,0]for _ in range(64)]
 N=[0]
-BD=200000
+BD=100000
 class TO(Exception):pass
 def qs(b,t,al,be,ply,e):
  N[0]+=1
