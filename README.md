@@ -11,18 +11,23 @@ engine that plays 8 games against the house gauntlet and rates at least
 
 ## How it plays
 
-- **Board:** 0x88 representation, one flat 128-cell list.
-- **Search:** alpha-beta with iterative deepening, a transposition table,
-  MVV-LVA capture ordering, killer moves, and a quiescence search over
-  captures and promotions.
+- **Board:** 0x88 representation, one flat 128-cell list, with per-piece
+  square lists for fast move generation.
+- **Search:** alpha-beta with iterative deepening under a fixed 60,000-node
+  budget per move, a Zobrist transposition table, null-move pruning, late
+  move reductions, principal-variation search, aspiration windows, check
+  extensions, MVV-LVA capture ordering, killer moves, a history heuristic,
+  and a quiescence search over captures, promotions and check evasions.
 - **Evaluation:** material (pawn 100, knight 320, bishop 330, rook 500,
-  queen 900) plus piece-square tables.
-- **Determinism:** every move is a pure function of the position and the
-  trial seed — a fixed node budget, no wall clock, no unseeded randomness.
-  Replays match byte for byte.
-- **Speed:** king squares are tracked incrementally and the quiescence
-  search only generates captures, so the engine searches ~25,000 nodes/s
-  and answers in ~1–3 s per move, well inside the 10 s limit.
+  queen 900) plus tapered middlegame/endgame piece-square tables built
+  from small formulas, a bishop-pair bonus, and incremental evaluation
+  and hashing updated on every make/unmake.
+- **Determinism:** every move is a pure function of the position — a fixed
+  node budget, no wall clock, no unseeded randomness. Replays match
+  byte for byte.
+- **Speed:** incremental eval/hash and capture-only generation in
+  quiescence keep the engine at roughly 12,000–25,000 nodes/s, so a
+  60,000-node move takes about 2–5 s, well inside the 10 s limit.
 
 `main.py` is the engine (packed with `makefun compress`); `engine.py` is
 the readable source it was packed from.
